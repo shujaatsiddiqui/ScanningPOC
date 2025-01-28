@@ -1,32 +1,20 @@
-<div>
-  <button (click)="ScanPDF()">SCAN PDF</button>
-  <!-- <button (click)="stopScanning()">Stop Scanning</button>
-  <button (click)="checkIsScanning()">Check Is Scanning</button> -->
-  <!-- <p *ngIf="isScanning">Scanner is running...</p>
-  <p *ngIf="!isScanning">Scanner is stopped.</p>
-  <ul>
-    <li *ngFor="let message of messages">{{ message }}</li>
-  </ul> -->
- 
-  <!-- <button *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
-    <img [src]="imageSrc" alt="Received Image" class="dynamic-image"/>
-  </button>
-  <button *ngIf="outputImage" (click)="openCropperModal()">
-    <img [src]="outputImage" alt="Received Image" class="dynamic-image"/>
-  </button> -->
+<div class="container d-flex flex-column justify-content-center align-items-center" style="height: 100vh;">
+  <div class="mb-4">
+    <button class="btn btn-primary btn-lg" (click)="ScanPDF()">Scan PDF</button>
+  </div>
 
-  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <div class="position-relative" *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
-      <img [src]="imageSrc" alt="Received Image" class="dynamic-image img-fluid"/>
-      <div class="overlay">
-        <span class="overlay-text">Edit</span>
-      </div>
+  <div *ngIf="isLoading" class="loader mb-4"></div>
+
+  <div class="position-relative mb-4" *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
+    <img [src]="imageSrc" alt="Received Image" class="dynamic-image img-fluid"/>
+    <div class="overlay">
+      <span class="overlay-text">Edit</span>
     </div>
-    <div class="position-relative" *ngIf="outputImage" (click)="openCropperModal()">
-      <img [src]="outputImage" alt="Received Image" class="dynamic-image img-fluid"/>
-      <div class="overlay">
-        <span class="overlay-text">Edit</span>
-      </div>
+  </div>
+  <div class="position-relative mb-4" *ngIf="outputImage" (click)="openCropperModal()">
+    <img [src]="outputImage" alt="Received Image" class="dynamic-image img-fluid"/>
+    <div class="overlay">
+      <span class="overlay-text">Edit</span>
     </div>
   </div>
 
@@ -35,5 +23,4 @@
     [outputImage]="outputImage" 
     (outputImageChange)="onOutputImageChange($event)">
   </img-cropper>
-
 </div>

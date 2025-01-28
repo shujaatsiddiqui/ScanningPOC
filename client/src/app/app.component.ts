@@ -14,6 +14,8 @@ export class AppComponent {
   messages: string[] = [];
   imageSrc: string | null = null;
   outputImage: string | null = null;
+  isLoading: boolean = false;
+
 
   @ViewChild(ImageCropperComponent) cropperComponent!: ImageCropperComponent;
   constructor(private signalRService: SignalRService) { }
@@ -24,6 +26,8 @@ export class AppComponent {
     });
 
     this.signalRService.onAttachmentReceive((attachment: string) => {
+      this.isLoading = false;
+
       console.log({ attachment });
       this.imageSrc = `data:image/jpeg;base64,${attachment}`;
       this.openCropperModal()
@@ -31,6 +35,7 @@ export class AppComponent {
   }
 
   ScanPDF(): void {
+    this.isLoading = true; 
     this.signalRService.ScanPDF();
   }
 

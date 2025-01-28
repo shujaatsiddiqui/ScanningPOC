@@ -99,11 +99,19 @@ export class ImageCropperComponent implements AfterViewInit {
   }
 
   readyImage(event: any) {
-    this.cropperRes = this.angularCropper.cropper.getCroppedCanvas().toDataURL('image/jpeg');
+    const cropper = this.angularCropper.cropper;
+    const imageData = cropper.getImageData();
+    cropper.setCropBoxData({
+      left: 0,
+      top: 0,
+      width: imageData.naturalWidth,
+      height: imageData.naturalHeight
+    });
+    this.cropperRes = cropper.getCroppedCanvas().toDataURL('image/jpeg');
   }
 
   rotate(turn: any) {
-    turn = turn === 'left' ? -30 : 30;
+    turn = turn === 'left' ? -5 : 5;
     this.angularCropper.cropper.rotate(turn);
     this.cropperRes = this.angularCropper.cropper.getCroppedCanvas().toDataURL('image/jpeg');
   }
