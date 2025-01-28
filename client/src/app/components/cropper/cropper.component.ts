@@ -103,7 +103,7 @@ export class ImageCropperComponent implements AfterViewInit {
   }
 
   rotate(turn: any) {
-    turn = turn === 'left' ? -90 : 90;
+    turn = turn === 'left' ? -30 : 30;
     this.angularCropper.cropper.rotate(turn);
     this.cropperRes = this.angularCropper.cropper.getCroppedCanvas().toDataURL('image/jpeg');
   }

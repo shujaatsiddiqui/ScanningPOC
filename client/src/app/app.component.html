@@ -1,12 +1,12 @@
 <div>
-  <button (click)="startScanning()">Start Scanning</button>
-  <button (click)="stopScanning()">Stop Scanning</button>
-  <button (click)="checkIsScanning()">Check Is Scanning</button>
-  <p *ngIf="isScanning">Scanner is running...</p>
+  <button (click)="ScanPDF()">SCAN PDF</button>
+  <!-- <button (click)="stopScanning()">Stop Scanning</button>
+  <button (click)="checkIsScanning()">Check Is Scanning</button> -->
+  <!-- <p *ngIf="isScanning">Scanner is running...</p>
   <p *ngIf="!isScanning">Scanner is stopped.</p>
   <ul>
     <li *ngFor="let message of messages">{{ message }}</li>
-  </ul>
+  </ul> -->
  
   <!-- <button *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
     <img [src]="imageSrc" alt="Received Image" class="dynamic-image"/>

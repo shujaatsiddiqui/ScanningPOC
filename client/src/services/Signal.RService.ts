@@ -24,19 +24,19 @@ export class SignalRService {
     this.hubConnection.start().catch(err => console.error({heheheh:err}));
   }
 
-  public startScanning(): void {
-    this.hubConnection.invoke('StartScanning').then((val=>{
+  public ScanPDF(): void {
+    this.hubConnection.invoke('ScanPDF').then((val=>{
       console.log("scanning started")
     }))
       .catch(err => console.error(err));
   }
 
-  public stopScanning(): void {
-    this.hubConnection.invoke('StopScanning').then((val=>{
-      console.log("scanning stoppped")
-    }))
-      .catch(err => console.error(err));
-  }
+  // public stopScanning(): void {
+  //   this.hubConnection.invoke('StopScanning').then((val=>{
+  //     console.log("scanning stoppped")
+  //   }))
+  //     .catch(err => console.error(err));
+  // }
 
   public isScanning(): Promise<boolean> {
     return this.hubConnection.invoke('IsScanning');

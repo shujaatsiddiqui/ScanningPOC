@@ -30,19 +30,19 @@ export class AppComponent {
     });
   }
 
-  startScanning(): void {
-    this.signalRService.startScanning();
+  ScanPDF(): void {
+    this.signalRService.ScanPDF();
   }
 
-  stopScanning(): void {
-    this.signalRService.stopScanning();
-  }
+  // stopScanning(): void {
+  //   this.signalRService.stopScanning();
+  // }
 
-  checkIsScanning(): void {
-    this.signalRService.isScanning().then(isScanning => {
-      this.isScanning = isScanning;
-    });
-  }
+  // checkIsScanning(): void {
+  //   this.signalRService.isScanning().then(isScanning => {
+  //     this.isScanning = isScanning;
+  //   });
+  // }
 
 
   openCropperModal(): void {
