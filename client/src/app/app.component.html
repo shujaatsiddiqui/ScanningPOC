@@ -7,12 +7,33 @@
   <ul>
     <li *ngFor="let message of messages">{{ message }}</li>
   </ul>
-
-  <div *ngIf="imageSrc" >
+ 
+  <!-- <button *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
     <img [src]="imageSrc" alt="Received Image" class="dynamic-image"/>
+  </button>
+  <button *ngIf="outputImage" (click)="openCropperModal()">
+    <img [src]="outputImage" alt="Received Image" class="dynamic-image"/>
+  </button> -->
+
+  <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="position-relative" *ngIf="!outputImage && imageSrc" (click)="openCropperModal()">
+      <img [src]="imageSrc" alt="Received Image" class="dynamic-image img-fluid"/>
+      <div class="overlay">
+        <span class="overlay-text">Edit</span>
+      </div>
+    </div>
+    <div class="position-relative" *ngIf="outputImage" (click)="openCropperModal()">
+      <img [src]="outputImage" alt="Received Image" class="dynamic-image img-fluid"/>
+      <div class="overlay">
+        <span class="overlay-text">Edit</span>
+      </div>
+    </div>
   </div>
-  <div *ngIf="!imageSrc">
-    <p>Waiting for image...</p>
-  </div>
+
+  <img-cropper 
+    [base64Image]="imageSrc" 
+    [outputImage]="outputImage" 
+    (outputImageChange)="onOutputImageChange($event)">
+  </img-cropper>
 
 </div>

@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* filepath: /d:/Projects/ScannerApi/client/src/styles.scss */
+// @import "~bootstrap/dist/css/bootstrap.min.css";
+
+.dynamic-image {
+  width: 100%;
+  height: auto;
+}
+
+.position-relative {
+  position: relative;
+  display: inline-block;
+  border-radius: 2px;
+  border: 1px solid #A4A4A4;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay-text {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.position-relative:hover .overlay {
+  opacity: 1;
+}
