@@ -1,0 +1,6 @@
+@ScannerApi_HostAddress = http://localhost:5230
+
+GET {{ScannerApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

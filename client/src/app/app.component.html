@@ -1,0 +1,18 @@
+<div>
+  <button (click)="startScanning()">Start Scanning</button>
+  <button (click)="stopScanning()">Stop Scanning</button>
+  <button (click)="checkIsScanning()">Check Is Scanning</button>
+  <p *ngIf="isScanning">Scanner is running...</p>
+  <p *ngIf="!isScanning">Scanner is stopped.</p>
+  <ul>
+    <li *ngFor="let message of messages">{{ message }}</li>
+  </ul>
+
+  <div *ngIf="imageSrc" >
+    <img [src]="imageSrc" alt="Received Image" class="dynamic-image"/>
+  </div>
+  <div *ngIf="!imageSrc">
+    <p>Waiting for image...</p>
+  </div>
+
+</div>
