@@ -75,6 +75,7 @@ button.disabled {
   background-color: rgb(235, 235, 235);
   width: 25%;
   padding: 30px 20px;
+  position: relative;
 }
 
 .upload-btn {
@@ -208,4 +209,20 @@ button.disabled {
   i {
     color: #A4A4A4;
   }
+}
+
+.floor-row {
+  display: flex;
+    position: absolute;
+    bottom: 20px;
+    margin-bottom: 0px !important;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+button {
+  padding: 2px 15px !important;
+  background-color: #2b2b3b;
+    color: white;
+}
 }

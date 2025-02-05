@@ -14,7 +14,7 @@
           <p class="text-center m-0" style="font-size: 14px;">&nbsp;{{currentIndex+1}} / {{imgSrcsLocal.length}}&nbsp;
           </p>
         </div>
-        <div class="scroll-container y-scroll y-mandatory">
+        <div *ngIf="showCroppedPreview === false" class="scroll-container y-scroll y-mandatory">
           <ng-container *ngFor="let img of imgSrcsLocal; let i=index">
             <div class="element d-flex flex-column align-items-center justify-content-center">
               <div class="d-flex" [attr.data-index]="i" #imageRef>
@@ -23,6 +23,7 @@
                   (imageCropped)="imageCropped($event, i)" (imageLoaded)="imageLoaded()"
                   (cropperReady)="cropperReady($event)" [hideResizeSquares]="editableIndex != i"
                   (loadImageFailed)="loadImageFailed()" [canvasRotation]="canvasRotations[i]"
+                  [disabled]="editableIndex != i"
                   (imageLoaded)="imageLoaded()"></image-cropper>
               </div>
               <div class="d-flex justify-content-center cropper-options" style="gap: 20px;">
@@ -33,6 +34,22 @@
             </div>
           </ng-container>
         </div>
+
+        <div *ngIf="showCroppedPreview === true" class="scroll-container y-scroll y-mandatory">
+          <ng-container  *ngFor="let img of croppedImages; let i=index">
+            <div class="element d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex" [attr.data-index]="i" #imageRef>
+                <img class="image-class" [src]="croppedImages[i]" />
+              </div>
+              <div class="d-flex justify-content-center cropper-options" style="gap: 20px;">
+                <i class="fa fa-trash-o delete-icon" (click)="removeImg(i)" aria-hidden="true"></i>
+                <i class="fa fa-pencil edit-icon" [class.active]="editableIndex == i" (click)="editImg(i)"
+                  aria-hidden="true"></i>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
       </div>
     </div>
   </div>
@@ -146,10 +163,16 @@
       </div>
     </form>
 
-    <button *ngIf="!imageLoaded.length" class="btn scan-btn p-0 mb-3" [class.disabled]="isLoading"
+    <button *ngIf="!imageLoaded.length && !imgSrcsLocal.length" class="btn scan-btn p-0 mb-3" [class.disabled]="isLoading"
       (click)="scanImage()">Scan&nbsp;<div *ngIf="isLoading" class="spinner-border spinner-border-sm text-light"
         role="status">
         <span class="sr-only">Loading...</span>
       </div></button>
-    <button *ngIf="imgSrcsLocal.length" class="btn scan-btn p-0 mb-3" (click)="onExportPdf()">Export</button>
+    <div *ngIf="showCroppedPreview" class="floor-row">
+      <button class="btn p-0 mb-3" (click)="discard()">Discard</button>
+      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onExportPdf()">Export</button>
+    </div>
+    <div *ngIf="imgSrcsLocal.length && !showCroppedPreview" class="floor-row">
+      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onSave()">Save</button>
+    </div>
   </div>

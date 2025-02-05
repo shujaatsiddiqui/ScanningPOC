@@ -1,8 +1,11 @@
-<div class="" style="height: 100vh;">
-  <!-- <div class="mb-4">
-    <button class="btn btn-primary btn-lg" (click)="startScanning()">Scan PDF</button>
-  </div> -->
-  <img-cropper [imageSrc]="imageSrc" [scannerOptions]="scanners" (onScan)="startScanning($event)"
-    [isLoading]="isLoading" style="width: 100%; height: 100%;">
+<div class="" style="height: 100vh">
+  <img-cropper
+    [imageSrc]="imageSrc"
+    [scannerOptions]="scanners"
+    (onScan)="startScanning($event)"
+    (onDiscard)="resetScanner($event)"
+    [isLoading]="isLoading"
+    style="width: 100%; height: 100%"
+  >
   </img-cropper>
 </div>

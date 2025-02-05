@@ -27,6 +27,7 @@ export class ImageCropperComponent implements OnChanges {
   @Input() scannerOptions: { name: string, id: string }[] | null = null;
   @Input() isLoading: boolean = false;
   @Output() onScan: EventEmitter<{}> = new EventEmitter<{}>();
+  @Output() onDiscard: EventEmitter<{}> = new EventEmitter<{}>();
   imgSrcsLocal: string[] = [];
   options: AnimationOptions = {
     path: '/assets/animations/scanner-loader.json',
@@ -42,6 +43,8 @@ export class ImageCropperComponent implements OnChanges {
   croppedImages: SafeUrl[] = [];
   canvasRotations: number[] = [0, 0, 0, 0];
   editableIndex: number = -1;
+  showCroppedPreview = false
+  croppedPreviewImages: any[] = []
 
   imageChangedEvent: Event | null = null;
   imageURL?: string;
@@ -130,100 +133,26 @@ export class ImageCropperComponent implements OnChanges {
     } else {
       this.editableIndex = index;
     }
+    this.showCroppedPreview = false
+  }
+
+  undoImage(index:number){
+    this.imgSrcsLocal[index] =  this._imageSrc[index]
   }
 
   scanImage() {
     this.onScan.emit(this.toolbarOptions);
   }
 
-  // This function will download a single page pdf with all the image
-  // async onExportPdfWithSinglePage() {
-  //   if (this.croppedImages && this.croppedImages.length > 0) {
-  //     try {
-  //       const pdfDoc = await PDFDocument.create();
-  //       const pageWidth = 595, pageHeight = 842; // A4 dimensions
-  //       const margin = 10;
-  //       const availableHeight = pageHeight - 2 * margin; // Total space available for images
+  discard(){
+    this.onDiscard.emit(this.toolbarOptions);
+  }
 
-  //       let yPosition = pageHeight - margin; // Start from the top
+  onSave(){
+    this.showCroppedPreview = true
+    this.editableIndex = -1
+  }
 
-  //       // Create a single page
-  //       const page = pdfDoc.addPage([pageWidth, pageHeight]);
-
-  //       for (const croppedImage of this.croppedImages) {
-  //         const imageUrl = this.sanitizer.sanitize(SecurityContext.URL, croppedImage);
-  //         if (!imageUrl) continue;
-
-  //         const img = new Image();
-  //         img.src = imageUrl;
-
-  //         await new Promise((resolve) => {
-  //           img.onload = async () => {
-  //             const canvas = document.createElement('canvas');
-  //             canvas.width = img.width;
-  //             canvas.height = img.height;
-  //             const ctx = canvas.getContext('2d');
-  //             ctx?.drawImage(img, 0, 0);
-
-  //             if (this.toolbarOptions['kind'] === 'Greyscale') {
-  //               const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
-  //               const data = imageData.data;
-  //               for (let i = 0; i < data.length; i += 4) {
-  //                 const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-  //                 data[i] = avg;
-  //                 data[i + 1] = avg;
-  //                 data[i + 2] = avg;
-  //               }
-  //               ctx!.putImageData(imageData, 0, 0);
-  //             }
-
-  //             const jpegData = canvas.toDataURL('image/jpeg', 1.0);
-  //             const base64Data = jpegData.replace('data:image/jpeg;base64,', '');
-  //             const imageBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-
-  //             const image = await pdfDoc.embedJpg(imageBytes);
-
-  //             // Calculate scaling to fit within available space
-  //             const maxWidth = pageWidth - 2 * margin;
-  //             const maxHeight = availableHeight / this.croppedImages.length - 10; // Split available space
-
-  //             const scaleWidth = maxWidth / image.width;
-  //             const scaleHeight = maxHeight / image.height;
-  //             const scale = Math.min(scaleWidth, scaleHeight); // Keep aspect ratio
-
-  //             const scaledWidth = image.width * scale;
-  //             const scaledHeight = image.height * scale;
-
-  //             yPosition -= scaledHeight + 10; // Space between images
-
-  //             // Draw image on the page
-  //             page.drawImage(image, {
-  //               x: (pageWidth - scaledWidth) / 2,
-  //               y: yPosition,
-  //               width: scaledWidth,
-  //               height: scaledHeight,
-  //             });
-
-  //             resolve(true);
-  //           };
-  //         });
-  //       }
-
-  //       // Save the PDF
-  //       const pdfBytes = await pdfDoc.save();
-  //       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-  //       const link = document.createElement('a');
-  //       link.href = URL.createObjectURL(blob);
-  //       link.download = `scanned-documents-${new Date().toISOString().split('T')[0]}.pdf`;
-  //       link.click();
-  //       URL.revokeObjectURL(link.href);
-  //       link.remove();
-
-  //     } catch (error) {
-  //       console.error('Error creating PDF:', error);
-  //     }
-  //   }
-  // }
 
   async onExportPdf() {
     try {
@@ -381,7 +310,6 @@ export class ImageCropperComponent implements OnChanges {
   imageCropped(event: ImageCroppedEvent, index: number) {
     this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
     this.croppedImages[index] = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
-    console.log('CROPPED', event);
   }
 
   imageLoaded() {
