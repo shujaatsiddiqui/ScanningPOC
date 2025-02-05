@@ -173,6 +173,7 @@
       <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onExportPdf()">Export</button>
     </div>
     <div *ngIf="imgSrcsLocal.length && !showCroppedPreview" class="floor-row">
-      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onSave()">Save</button>
+      <button class="btn p-0 mb-3" (click)="discard()">Discard</button>
+      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onSave()">Save Changes</button>
     </div>
   </div>
