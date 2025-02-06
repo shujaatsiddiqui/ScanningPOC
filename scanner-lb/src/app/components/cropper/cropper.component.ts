@@ -40,7 +40,7 @@ export class ImageCropperComponent implements OnChanges {
   showCropper = true;
   // loading = false;
   croppedImage: SafeUrl = '';
-  croppedImages: SafeUrl[] = [];
+  croppedImages: any[] = [];
   canvasRotations: number[] = [0, 0, 0, 0];
   editableIndex: number = -1;
   showCroppedPreview = false
@@ -138,6 +138,7 @@ export class ImageCropperComponent implements OnChanges {
 
   undoImage(index:number){
     this.imgSrcsLocal[index] =  this._imageSrc[index]
+    this.croppedImages[index] =  this._imageSrc[index]
   }
 
   scanImage() {
@@ -412,6 +413,7 @@ export class ImageCropperComponent implements OnChanges {
   }
 
   resetImage() {
+    this.imageElements.get(0)?.nativeElement
     this.canvasRotation = 0;
     this.cropper = undefined;
     this.maintainAspectRatio = false;
