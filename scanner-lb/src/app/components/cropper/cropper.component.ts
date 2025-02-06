@@ -139,6 +139,7 @@ export class ImageCropperComponent implements OnChanges {
   undoImage(index: number) {
     this.imgSrcsLocal[index] = this._imageSrc[index]
     this.croppedImages[index] = this._imageSrc[index]
+    this.cropper[index] = undefined as any
   }
 
   scanImage() {
@@ -236,7 +237,7 @@ export class ImageCropperComponent implements OnChanges {
 
   }
 
-  
+
   imageCropped(event: ImageCroppedEvent, index: number) {
     this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
     this.croppedImages[index] = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
