@@ -404,3 +404,8 @@ tmp/
 *.log
 *.tsbuildinfo
 .idea/
+
+
+/**/node_modules
+/**/*.lock
+/**/*-lock.json

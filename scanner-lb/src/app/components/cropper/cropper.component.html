@@ -1,0 +1,188 @@
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" /> -->
+
+<div class="d-flex w-100 h-100">
+  <div class="image-container d-flex align-items-center justify-content-center">
+
+    <p *ngIf="!imgSrcsLocal.length && !isLoading">Please scan the documents to enable editing</p>
+
+    <ng-lottie *ngIf="isLoading" [options]="options" width="350px" height="350px"
+      (animationCreated)="animationCreated($event)" />
+
+    <div *ngIf="imgSrcsLocal.length" [style.display]="showCropper ? null : 'none'" class="cropper-wrapper w-100">
+      <div class="w-100 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center justify-content-center" style="height: 40px;">
+          <p class="text-center m-0" style="font-size: 14px;">&nbsp;{{currentIndex+1}} / {{imgSrcsLocal.length}}&nbsp;
+          </p>
+        </div>
+        <div *ngIf="showCroppedPreview === false" class="scroll-container y-scroll y-mandatory">
+          <ng-container *ngFor="let img of imgSrcsLocal; let i=index">
+            <div class="element d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex" [attr.data-index]="i" #imageRef>
+                <image-cropper class="image-class" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="false"
+                  [imageBase64]="imgSrcsLocal[i]!" [aspectRatio]="4 / 3" format="png"
+                  (imageCropped)="imageCropped($event, i)" (imageLoaded)="imageLoaded()"
+                  (cropperReady)="cropperReady($event)" [hideResizeSquares]="editableIndex != i"
+                  (loadImageFailed)="loadImageFailed()" [canvasRotation]="canvasRotations[i]"
+                  [disabled]="editableIndex != i"
+                  (imageLoaded)="imageLoaded()"></image-cropper>
+              </div>
+              <div class="d-flex justify-content-center cropper-options" style="gap: 20px;">
+                <i class="fa fa-trash-o delete-icon" (click)="removeImg(i)" aria-hidden="true"></i>
+                <i class="fa fa-pencil edit-icon" [class.active]="editableIndex == i" (click)="editImg(i)"
+                  aria-hidden="true"></i>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngIf="showCroppedPreview === true" class="scroll-container y-scroll y-mandatory">
+          <ng-container  *ngFor="let img of croppedImages; let i=index">
+            <div class="element d-flex flex-column align-items-center justify-content-center">
+              <div class="d-flex" [attr.data-index]="i" #imageRef>
+                <image-cropper *ngIf="croppedImages[i]?.startsWith?.('data:')" class="image-class" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="false"
+                [imageBase64]="croppedImages[i]!" [aspectRatio]="4 / 3" format="png"
+                (imageCropped)="imageCropped($event, i)" (imageLoaded)="imageLoaded()"
+                (cropperReady)="cropperReady($event)" [hideResizeSquares]="editableIndex != i"
+                (loadImageFailed)="loadImageFailed()" [canvasRotation]="canvasRotations[i]"
+                [disabled]="editableIndex != i"
+                (imageLoaded)="imageLoaded()"></image-cropper>
+                <img *ngIf="!croppedImages[i]?.startsWith?.('data:')" class="image-class" [src]="croppedImages[i]" />
+              </div>
+              <div class="d-flex justify-content-center cropper-options" style="gap: 20px;">
+                <i class="fa fa-trash-o delete-icon" (click)="removeImg(i)" aria-hidden="true"></i>
+                <i class="fa fa-pencil edit-icon" [class.active]="editableIndex == i" (click)="editImg(i)"
+                  aria-hidden="true"></i>
+                  <i *ngIf="editableIndex < 0" class="fa fa-undo"  (click)="undoImage(i)"
+                  aria-hidden="true"></i>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="scanner-options-container">
+
+    <div class="option-row" *ngIf="imgSrcsLocal.length" [class.cursor-not-allowed]="editableIndex == -1">
+      <p class="option-label">Orientation:</p>
+      <div class="orientation-options">
+        <i class="fa fa-solid fa-user" [class.active]="!canvasRotations[editableIndex] && editableIndex !== -1"
+          (click)="changeRotation(0)"></i>
+        <i class="fa fa-solid fa-user" style="transform: rotate(90deg);"
+          [class.active]="canvasRotations[editableIndex] == 1" (click)="changeRotation(1)"></i>
+        <i class="fa fa-solid fa-user" style="transform: rotate(180deg);"
+          [class.active]="canvasRotations[editableIndex] == 2" (click)="changeRotation(2)"></i>
+        <i class="fa fa-solid fa-user" style="transform: rotate(270deg);"
+          [class.active]="canvasRotations[editableIndex] == 3" (click)="changeRotation(3)"></i>
+      </div>
+      <div class="help-tooltip">
+        <i class="fa fa-info" data-toggle="tooltip" title="Select an image to change it's orientation!"></i>
+      </div>
+    </div>
+
+    <form *ngIf="!imgSrcsLocal.length">
+      <div class="option-row">
+        <p class="option-label">Scanner:</p>
+        <div class="dropdown d-flex">
+          <button
+            class="btn btn-secondary dropdown-toggle custom-dropdown d-flex justify-content-between align-items-center m-0"
+            type="button" id="scannerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{selectedScannerName}}
+            <i class="fa fa-chevron-down"></i>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="scannerDropdown">
+            <li *ngFor="let option of scannerOptions">
+              <button class="dropdown-item" [class.active]="toolbarOptions['scanner'] === option.id"
+                (click)="toolbarOptions['scanner'] = option.id" type="button">{{option!.name}}</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <p class="option-label">Kind:</p>
+        <div class="dropdown d-flex">
+          <button
+            class="btn btn-secondary dropdown-toggle custom-dropdown d-flex justify-content-between align-items-center m-0"
+            type="button" id="kindDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{toolbarOptions['kind'] || 'Select Kind'}}
+            <i class="fa fa-chevron-down"></i>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="kindDropdown">
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['kind'] === 'Colored'"
+                (click)="toolbarOptions['kind'] = 'Colored'">Colored</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['kind'] === 'Greyscale'"
+                (click)="toolbarOptions['kind'] = 'Greyscale'">Greyscale</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="option-row">
+        <p class="option-label">Resolution:</p>
+        <div class="dropdown d-flex">
+          <button
+            class="btn btn-secondary dropdown-toggle custom-dropdown d-flex justify-content-between align-items-center m-0"
+            type="button" id="resolutionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{toolbarOptions['resolution'] || 'Select Resolution'}}
+            <i class="fa fa-chevron-down"></i>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="resolutionDropdown">
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['resolution'] === '150 DPI'"
+                (click)="toolbarOptions['resolution'] = '150 DPI'">150 DPI</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['resolution'] === '300 DPI'"
+                (click)="toolbarOptions['resolution'] = '300 DPI'">300 DPI</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['resolution'] === '600 DPI'"
+                (click)="toolbarOptions['resolution'] = '600 DPI'">600 DPI</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <p class="option-label">Size:</p>
+        <div class="dropdown d-flex">
+          <button
+            class="btn btn-secondary dropdown-toggle custom-dropdown d-flex justify-content-between align-items-center m-0"
+            type="button" id="sizeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            {{toolbarOptions['size'] || 'Select Size'}}
+            <i class="fa fa-chevron-down"></i>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="sizeDropdown">
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'A4'"
+                (click)="toolbarOptions['size'] = 'A4'">A4</button>
+            </li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'A3'"
+                (click)="toolbarOptions['size'] = 'A3'">A3</button>
+            </li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'A5'"
+                (click)="toolbarOptions['size'] = 'A5'">A5</button>
+            </li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'Letter'"
+                (click)="toolbarOptions['size'] = 'Letter'">Letter</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'Legal'"
+                (click)="toolbarOptions['size'] = 'Legal'">Legal</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'Tabloid'"
+                (click)="toolbarOptions['size'] = 'ATabloid4'">Tabloid</button></li>
+            <li><button class="dropdown-item" type="button" [class.active]="toolbarOptions['size'] === 'Executive'"
+                (click)="toolbarOptions['size'] = 'Executive'">Executive</button></li>
+          </ul>
+        </div>
+      </div>
+    </form>
+
+    <button *ngIf="!imageLoaded.length && !imgSrcsLocal.length" class="btn scan-btn p-0 mb-3" [class.disabled]="isLoading"
+      (click)="scanImage()">Scan&nbsp;<div *ngIf="isLoading" class="spinner-border spinner-border-sm text-light"
+        role="status">
+        <span class="sr-only">Loading...</span>
+      </div></button>
+    <div *ngIf="showCroppedPreview" class="floor-row">
+      <button class="btn p-0 mb-3" (click)="discard()">Discard</button>
+      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onExportPdf()">Export</button>
+    </div>
+    <div *ngIf="imgSrcsLocal.length && !showCroppedPreview" class="floor-row">
+      <button class="btn p-0 mb-3" (click)="discard()">Discard</button>
+      <button *ngIf="imgSrcsLocal.length" class="btn p-0 mb-3" (click)="onSave()">Save Changes</button>
+    </div>
+  </div>

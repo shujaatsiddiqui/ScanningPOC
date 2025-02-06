@@ -24,19 +24,19 @@ export class SignalRService {
     this.hubConnection.start().catch(err => console.error({heheheh:err}));
   }
 
-  public ScanPDF(): void {
-    this.hubConnection.invoke('ScanPDF').then((val=>{
+  public startScanning(): void {
+    this.hubConnection.invoke('StartScanning').then((val=>{
       console.log("scanning started")
     }))
       .catch(err => console.error(err));
   }
 
-  // public stopScanning(): void {
-  //   this.hubConnection.invoke('StopScanning').then((val=>{
-  //     console.log("scanning stoppped")
-  //   }))
-  //     .catch(err => console.error(err));
-  // }
+  public stopScanning(): void {
+    this.hubConnection.invoke('StopScanning').then((val=>{
+      console.log("scanning stoppped")
+    }))
+      .catch(err => console.error(err));
+  }
 
   public isScanning(): Promise<boolean> {
     return this.hubConnection.invoke('IsScanning');
@@ -46,7 +46,7 @@ export class SignalRService {
     this.hubConnection.on('ReceiveMessage', callback);
   }
 
-  public onAttachmentReceive(callback: (message: string) => void): void {
+  public onAttachmentReceive(callback: (message: Array<string>) => void): void {
     this.hubConnection.on('onAttachmentReceive', callback);
   }
 }
