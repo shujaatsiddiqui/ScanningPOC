@@ -48,7 +48,7 @@
                   [resetCropOnAspectRatioChange]="resetCropOnAspectRatioChange" [onlyScaleDown]="true"
                   [containWithinAspectRatio]="false" [(cropper)]="cropper[i]" [(transform)]="transform"
                   (imageLoaded)="imageLoaded()"></image-cropper>
-                <img *ngIf="!croppedImages[i]?.startsWith?.('data:')" class="image-class" [src]="croppedImages[i]" />
+                <img *ngIf="!croppedImages[i]?.startsWith?.('data:')" class="image-class" [src]="croppedImages[i]" style="object-fit: contain;aspect-ratio: 4 / 3;" />
               </div>
               <div class="d-flex justify-content-center cropper-options" style="gap: 20px;">
                 <i class="fa fa-trash-o delete-icon" (click)="removeImg(i)" aria-hidden="true"></i>

@@ -153,6 +153,7 @@ export class ImageCropperComponent implements OnChanges {
     this.showCroppedPreview = false
     this.croppedPreviewImages = []
     this.cropper = []
+    this.editableIndex = -1
   }
 
   onSave() {
