@@ -136,20 +136,24 @@ export class ImageCropperComponent implements OnChanges {
     this.showCroppedPreview = false
   }
 
-  undoImage(index:number){
-    this.imgSrcsLocal[index] =  this._imageSrc[index]
-    this.croppedImages[index] =  this._imageSrc[index]
+  undoImage(index: number) {
+    this.imgSrcsLocal[index] = this._imageSrc[index]
+    this.croppedImages[index] = this._imageSrc[index]
   }
 
   scanImage() {
     this.onScan.emit(this.toolbarOptions);
   }
 
-  discard(){
+  discard() {
     this.onDiscard.emit(this.toolbarOptions);
+    this.croppedImages = []
+    this.croppedImage = ''
+    this.showCroppedPreview = false
+    this.croppedPreviewImages = []
   }
 
-  onSave(){
+  onSave() {
     this.showCroppedPreview = true
     this.editableIndex = -1
   }
