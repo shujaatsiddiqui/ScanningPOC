@@ -152,6 +152,7 @@ export class ImageCropperComponent implements OnChanges {
     this.croppedImage = ''
     this.showCroppedPreview = false
     this.croppedPreviewImages = []
+    this.cropper = []
   }
 
   onSave() {
