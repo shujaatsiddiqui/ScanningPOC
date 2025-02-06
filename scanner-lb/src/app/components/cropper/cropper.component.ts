@@ -66,7 +66,7 @@ export class ImageCropperComponent implements OnChanges {
   cropperMaxWidth = 0;
   cropperMaxHeight = 0;
   resetCropOnAspectRatioChange = true;
-  cropper?: CropperPosition;
+  cropper: CropperPosition[] = [];
   transform: ImageTransform = {
     translateUnit: 'px',
     scale: 1,
@@ -236,82 +236,7 @@ export class ImageCropperComponent implements OnChanges {
 
   }
 
-  async downloadAsPDF() {
-    if (this.croppedImage) {
-      const imageUrl = this.sanitizer.sanitize(SecurityContext.URL, this.croppedImage);
-
-      try {
-        // Create a new PDF document
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage([595, 842]); // A4 size in points (72 points per inch)
-
-        const img = new Image();
-        img.src = imageUrl!;
-
-        await new Promise((resolve) => {
-          img.onload = async () => {
-            // Create a canvas to convert the image
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx?.drawImage(img, 0, 0);
-
-            // Convert to JPEG format
-            const jpegData = canvas.toDataURL('image/jpeg', 1.0);
-            const base64Data = jpegData.replace('data:image/jpeg;base64,', '');
-            const imageBytes = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-
-            // Embed the image
-            const image = await pdfDoc.embedJpg(imageBytes);
-            // Calculate scaling to fit within A4 page with margins
-            const pageWidth = 595;
-            const pageHeight = 842;
-            const margin = 10; // 10 points margin
-            const maxWidth = pageWidth - (2 * margin);
-            const maxHeight = pageHeight - (2 * margin);
-
-            const scaleWidth = maxWidth / image.width;
-            const scaleHeight = maxHeight / image.height;
-            const scale = Math.min(scaleWidth, scaleHeight); // Use the smaller scale to fit both dimensions
-
-            const scaledWidth = image.width * scale;
-            const scaledHeight = image.height * scale;
-
-            // Center the image on the page
-            const x = (pageWidth - scaledWidth) / 2;
-            const y = (pageHeight - scaledHeight) / 2;
-
-            // Draw image on the page
-            page.drawImage(image, {
-              x,
-              y,
-              width: scaledWidth,
-              height: scaledHeight,
-            });
-
-            resolve(true);
-          };
-        });
-
-        // Save the PDF
-        const pdfBytes = await pdfDoc.save();
-
-        // Create blob and download
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `scanned-document-${new Date().toISOString().split('T')[0]}.pdf`
-        link.click();
-        URL.revokeObjectURL(link.href);
-        link.remove();
-
-      } catch (error) {
-        console.error('Error creating PDF:', error);
-      }
-    }
-  }
-
+  
   imageCropped(event: ImageCroppedEvent, index: number) {
     this.croppedImage = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
     this.croppedImages[index] = this.sanitizer.bypassSecurityTrustUrl(event.objectUrl || event.base64 || '');
@@ -419,7 +344,7 @@ export class ImageCropperComponent implements OnChanges {
   resetImage() {
     this.imageElements.get(0)?.nativeElement
     this.canvasRotation = 0;
-    this.cropper = undefined;
+    this.cropper = [];
     this.maintainAspectRatio = false;
     this.transform = {
       translateUnit: 'px',
@@ -473,16 +398,5 @@ export class ImageCropperComponent implements OnChanges {
     }, 500);
   }
 
-  /*
-   Random Test button triggers this method
-   use it to test whatever you want
-  */
-  test() {
-    this.canvasRotation = 3;
-    this.transform = {
-      ...this.transform,
-      scale: 2
-    };
-    this.cropper = { x1: 190, y1: 221.5, x2: 583, y2: 344.3125 }; // has 16/5 aspect ratio
-  }
+
 }
