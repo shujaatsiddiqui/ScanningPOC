@@ -16,7 +16,7 @@
         </div>
         <div *ngIf="showCroppedPreview === false" class="scroll-container y-scroll y-mandatory">
           <ng-container *ngFor="let img of imgSrcsLocal; let i=index">
-            <div class="element d-flex flex-column align-items-center justify-content-center">
+            <div class="element d-flex flex-column align-items-center justify-content-center m-2">
               <div class="d-flex" [attr.data-index]="i" #imageRef>
                 <image-cropper class="image-class" [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="false"
                   [imageBase64]="imgSrcsLocal[i]!" [aspectRatio]="4 / 3" format="png"
@@ -37,8 +37,8 @@
         </div>
         <div *ngIf="showCroppedPreview === true" class="scroll-container y-scroll y-mandatory">
           <ng-container *ngFor="let img of croppedImages; let i=index">
-            <div class="element d-flex flex-column align-items-center justify-content-center">
-              <div class="d-flex" [attr.data-index]="i" #imageRef>
+            <div class="element d-flex flex-column align-items-center justify-content-center m-2">
+              <div class="d-flex" [attr.data-index]="i" #imagePreviewlements>
                 <image-cropper *ngIf="croppedImages[i]?.startsWith?.('data:')" class="image-class"
                   [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="false"
                   [imageBase64]="croppedImages[i]!" format="png" (imageCropped)="imageCropped($event, i)"
