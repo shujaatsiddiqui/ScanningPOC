@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { SignalRService } from '../services/Signal.RService';
-import { ImageCropperComponent } from './components/cropper/cropper.component';
+import { ScannerComponent } from 'scanner';
 import DummyImages from '../dummy_images.json';
 
 @Component({
@@ -36,7 +36,7 @@ export class AppComponent {
     { name: 'Brother ADS-2700W', id: 'ADS2700' },
   ];
 
-  @ViewChild(ImageCropperComponent) cropperComponent!: ImageCropperComponent;
+  @ViewChild(ScannerComponent) cropperComponent!: ScannerComponent;
   constructor(private signalRService: SignalRService) {
     this.signalRService.initialize(
       this.BASE_URL,
