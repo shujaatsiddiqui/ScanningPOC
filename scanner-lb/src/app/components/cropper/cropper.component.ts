@@ -158,7 +158,9 @@ export class ImageCropperComponent implements OnChanges {
 
   onSave() {
     this.showCroppedPreview = true
-    this.editableIndex = -1
+    this.editableIndex = -1;
+    this.currentIndex = 0;
+    setTimeout(() => this.initObserver(), 500);
   }
 
 

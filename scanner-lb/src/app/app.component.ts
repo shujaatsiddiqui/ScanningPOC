@@ -9,6 +9,8 @@ import DummyImages from '../dummy_images.json';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  private BASE_URL = 'http://localhost:5230';
+  private scanner_listener_endpoint = '/scannerhub';
   title = 'my-app';
   scaningOptions: {
     scanner: string;
@@ -35,7 +37,12 @@ export class AppComponent {
   ];
 
   @ViewChild(ImageCropperComponent) cropperComponent!: ImageCropperComponent;
-  constructor(private signalRService: SignalRService) {}
+  constructor(private signalRService: SignalRService) {
+    this.signalRService.initialize(
+      this.BASE_URL,
+      this.scanner_listener_endpoint
+    ); //important for connecting to hub service
+  }
 
   ngOnInit(): void {
     this.signalRService.onReceiveMessage((message: string) => {
@@ -60,18 +67,17 @@ export class AppComponent {
   }
 
   startScanning(options: any): void {
-    this.scaningOptions = options
+    this.scaningOptions = options;
     this.isLoading = true;
-    // setTimeout(() => {
-    //   this.imageSrc =
-    //   this.isLoading = false
-    // }, 2000)
+    setTimeout(() => {
+      this.imageSrc = DummyImages;
+      this.isLoading = false;
+    }, 2000);
     this.signalRService.startScanning();
   }
 
-
-  resetScanner(event:any){
-    this.imageSrc = []
+  resetScanner(event: any) {
+    this.imageSrc = [];
   }
 
   stopScanning(): void {
