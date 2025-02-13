@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ScannerComponent } from './cropper.component';
+import { ScannerComponent } from './scanner.component';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 

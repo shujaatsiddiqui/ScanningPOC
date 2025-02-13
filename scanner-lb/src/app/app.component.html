@@ -1,11 +1,7 @@
 <div class="" style="height: 100vh; overflow: hidden">
-  <img-cropper
-    [imageSrc]="imageSrc"
-    [scannerOptions]="scanners"
-    (onScan)="startScanning($event)"
-    (onDiscard)="resetScanner($event)"
-    [isLoading]="isLoading"
+  <img-scanner
+  [SERVICE_BASE_URL]="BASE_URL"
     style="width: 100%; height: 100%"
   >
-  </img-cropper>
+  </img-scanner>
 </div>

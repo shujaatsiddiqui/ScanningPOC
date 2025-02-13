@@ -55,11 +55,11 @@ Modify your Angular module (app.module.ts or any feature module) to include the 
 Example:
 
 ```js
-import { ImageCropperModule } from 'image-cropper';
+import { ScannerModule } from 'scanner';
 
 @NgModule({
   imports: [
-    ImageCropperModule,
+    ScannerModule,
     // other imports
   ],
   // other configurations

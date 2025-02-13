@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { ERROR_MESSAGE } from './constants/error-message';
 
+const deafult_scanner_listener_endpoint = '/scannerhub';
 @Injectable({
   providedIn: 'root',
 })
@@ -10,7 +11,13 @@ export class SignalRService {
 
   constructor() {}
 
-  public initialize(baseUrl: string, scannerListenerEndpoint: string): void {
+  public initialize(baseUrl: string, scannerListenerEndpoint?: string): void {
+    if (!baseUrl) {
+      console.error(ERROR_MESSAGE.INITIALIZATION_URL_ERROR);
+    }
+    if (!scannerListenerEndpoint) {
+      scannerListenerEndpoint = deafult_scanner_listener_endpoint;
+    }
     this.hubConnection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Debug)
       .withUrl(`${baseUrl}${scannerListenerEndpoint}`, {
@@ -24,7 +31,7 @@ export class SignalRService {
 
   public startScanning(): void {
     if (!this.hubConnection) {
-      throw new Error(ERROR_MESSAGE.INITIALIZATION_ERROR);
+      console.error(ERROR_MESSAGE.INITIALIZATION_ERROR);
     }
     this.hubConnection!.invoke('StartScanning')
       .then((val) => {
@@ -35,7 +42,7 @@ export class SignalRService {
 
   public stopScanning(): void {
     if (!this.hubConnection) {
-      throw new Error(ERROR_MESSAGE.INITIALIZATION_ERROR);
+      console.error(ERROR_MESSAGE.INITIALIZATION_ERROR);
     }
     this.hubConnection!.invoke('StopScanning')
       .then((val) => {
@@ -46,21 +53,21 @@ export class SignalRService {
 
   public isScanning(): Promise<boolean> {
     if (!this.hubConnection) {
-      throw new Error(ERROR_MESSAGE.INITIALIZATION_ERROR);
+      console.error(ERROR_MESSAGE.INITIALIZATION_ERROR);
     }
     return this.hubConnection!.invoke('IsScanning');
   }
 
   public onReceiveMessage(callback: (message: string) => void): void {
     if (!this.hubConnection) {
-      throw new Error(ERROR_MESSAGE.INITIALIZATION_ERROR);
+      console.error(ERROR_MESSAGE.INITIALIZATION_ERROR);
     }
     this.hubConnection!.on('ReceiveMessage', callback);
   }
 
   public onAttachmentReceive(callback: (message: Array<string>) => void): void {
     if (!this.hubConnection) {
-      throw new Error(ERROR_MESSAGE.INITIALIZATION_ERROR);
+      console.error(ERROR_MESSAGE.INITIALIZATION_ERROR);
     }
     this.hubConnection!.on('onAttachmentReceive', callback);
   }

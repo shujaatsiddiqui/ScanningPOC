@@ -4,8 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
-import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
-// import { ScannerModule } from './components/cropper/scanner.module';
+// import { ScannerModule } from './components/scanner/scanner.module';
 
 import {ScannerModule} from "scanner"
 
@@ -18,7 +17,6 @@ import {ScannerModule} from "scanner"
     AppRoutingModule,
     FormsModule,
     NgIf,
-    LottieComponent,
     ScannerModule
   ],
   bootstrap: [AppComponent]

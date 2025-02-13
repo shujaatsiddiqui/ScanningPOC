@@ -1,44 +1,40 @@
-import { Component, ElementRef, Input, Output, EventEmitter, SecurityContext, OnChanges, ViewChildren, QueryList } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, QueryList, SecurityContext, ViewChildren } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CropperPosition, Dimensions, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
-import { PageSizes, PDFDocument } from 'pdf-lib';
-import { AnimationOptions } from 'ngx-lottie';
 import { AnimationItem } from 'lottie-web';
-
+import { CropperPosition, Dimensions, ImageCroppedEvent, ImageTransform } from 'ngx-image-cropper';
+import { AnimationOptions } from 'ngx-lottie';
+import { PageSizes, PDFDocument } from 'pdf-lib';
+import DummyImages from "./dummy_images.json";
+import { SignalRService } from './services/Signal.RService';
 @Component({
-  selector: 'img-cropper',
-  templateUrl: './cropper.component.html',
-  styleUrl: './cropper.component.scss',
+  selector: 'img-scanner',
+  templateUrl: './scanner.component.html',
+  styleUrl: './scanner.component.scss',
 })
 export class ScannerComponent implements OnChanges {
   private _imageSrc!: string[];
+  private serviceInitialized: boolean = false;
 
-  @Input()
-  set imageSrc(value: string[]) {
-    console.log("setter called");
-    this._imageSrc = value;
-    this.imgSrcsLocal = value; // Automatically copy to another variable
-  }
+  scanners: { name: string, id: string }[] = [
+    { name: 'HP ScanJet Pro 2500', id: 'HP2500' },
+    { name: 'Epson WorkForce ES-400', id: 'ES400' },
+    { name: 'Canon imageFormula R40', id: 'R40' },
+    { name: 'Fujitsu ScanSnap iX1600', id: 'IX1600' },
+    { name: 'Brother ADS-2700W', id: 'ADS2700' },
+  ];
 
-  get imageSrc(): string[] {
-    return this._imageSrc;
-  }
+  isLoading: boolean = false;
 
-  @Input() scannerOptions: { name: string, id: string }[] | null = null;
-  @Input() isLoading: boolean = false;
-  @Output() onScan: EventEmitter<{}> = new EventEmitter<{}>();
-  @Output() onDiscard: EventEmitter<{}> = new EventEmitter<{}>();
+  @Input() SERVICE_BASE_URL: string | null = null;
+
   imgSrcsLocal: string[] = [];
+
   options: AnimationOptions = {
     path: '/assets/animations/scanner-loader.json',
   };
 
-  animationCreated(animationItem: AnimationItem): void {
-    console.log(animationItem);
-  }
 
   showCropper = true;
-  // loading = false;
   croppedImage: SafeUrl = '';
   croppedImages: any[] = [];
   canvasRotations: number[] = [0, 0, 0, 0];
@@ -52,7 +48,7 @@ export class ScannerComponent implements OnChanges {
   disabled = false;
   alignImage = 'center' as const;
   roundCropper = false;
-  backgroundColor = 'red';
+  backgroundColor = 'transparent';
   allowMoveImage = false;
   hideResizeSquares = false;
   canvasRotation = 0;
@@ -89,15 +85,69 @@ export class ScannerComponent implements OnChanges {
 
   @ViewChildren('imageRef') imageElements!: QueryList<ElementRef>;
 
+
+
+
+  set imageSrc(value: string[]) {
+    console.log("setter called");
+    this._imageSrc = value;
+    this.imgSrcsLocal = value; // Automatically copy to another variable
+  }
+
+  get imageSrc(): string[] {
+    return this._imageSrc;
+  }
+
+
+  animationCreated(animationItem: AnimationItem): void {
+    console.log(animationItem);
+  }
+
   constructor(
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer, private signalRService: SignalRService
   ) {
+
+
+  }
+
+
+
+  initializeAndConfigureListener():void{
+    if(this.serviceInitialized){
+      return
+    }
+
+    this.signalRService.initialize(
+      this.SERVICE_BASE_URL!,
+    );
+
+    this.signalRService.onAttachmentReceive((attachment: Array<string>) => {
+      try {
+        this.isLoading = false;
+        if (Array.isArray(attachment)) {
+          this.imageSrc = attachment;
+        } else {
+          const image = `data:image/jpeg;base64,${attachment}`;
+          this.imageSrc.push(image);
+        }
+      } catch (error) {
+        console.error('error occured while receiving attachment', error);
+        console.log('using dummy images');
+        this.imageSrc = DummyImages;
+      }
+    });
+    this.serviceInitialized = true
   }
 
   ngOnChanges() {
-    if (this.imageSrc.length) {
+    if (this.imageSrc?.length) {
       setTimeout(() => this.initObserver(), 100); // Small delay to ensure elements are rendered
     }
+
+    if(!this.serviceInitialized){
+      this.initializeAndConfigureListener()
+    }
+
   }
 
   initObserver() {
@@ -118,7 +168,7 @@ export class ScannerComponent implements OnChanges {
   }
 
   get selectedScannerName(): string {
-    return this.scannerOptions?.find(scanner => scanner.id === this.toolbarOptions['scanner'])?.name || 'Select Scanner';
+    return this.scanners?.find(scanner => scanner.id === this.toolbarOptions['scanner'])?.name || 'Select Scanner';
   }
 
   removeImg(index: number) {
@@ -143,17 +193,22 @@ export class ScannerComponent implements OnChanges {
   }
 
   scanImage() {
-    this.onScan.emit(this.toolbarOptions);
+    this.isLoading = true;
+    setTimeout(() => {
+      this.imageSrc = DummyImages;
+      this.isLoading = false;
+    }, 2000);
+    this.signalRService.startScanning();
   }
 
   discard() {
-    this.onDiscard.emit(this.toolbarOptions);
     this.croppedImages = []
     this.croppedImage = ''
     this.showCroppedPreview = false
     this.croppedPreviewImages = []
     this.cropper = []
     this.editableIndex = -1
+    this.imageSrc = [];
   }
 
   onSave() {
@@ -267,25 +322,20 @@ export class ScannerComponent implements OnChanges {
 
   changeRotation(rotation: number) {
     if (this.editableIndex == -1) return
-    // this.loading = true;
-    // this.toolbarOptions['orientation'] = rotation
-    setTimeout(() => { // Use timeout because rotating image is a heavy operation and will block the ui thread
+    setTimeout(() => {
       this.canvasRotation = rotation;
       this.canvasRotations[this.editableIndex] = rotation;
-      // this.flipAfterRotate();
     });
   }
 
   rotateLeft() {
-    // this.loading = true;
-    setTimeout(() => { // Use timeout because rotating image is a heavy operation and will block the ui thread
+    setTimeout(() => {
       this.canvasRotation--;
       this.flipAfterRotate();
     });
   }
 
   rotateRight() {
-    // this.loading = true;
     setTimeout(() => {
       this.canvasRotation++;
       this.flipAfterRotate();
@@ -388,7 +438,7 @@ export class ScannerComponent implements OnChanges {
   }
 
   toggleBackgroundColor() {
-    this.backgroundColor = this.backgroundColor === 'red' ? 'blue' : 'red';
+    this.backgroundColor = this.backgroundColor === 'transparent' ? 'transparent' : 'transparent';
   }
 
   // prevent over triggering app when typing
