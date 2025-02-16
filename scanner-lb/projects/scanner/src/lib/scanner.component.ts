@@ -134,10 +134,15 @@ export class ScannerComponent implements OnChanges {
         console.error('error occured while receiving attachment', error);
         console.log('using dummy images');
         this.imageSrc = DummyImages;
+
+      }
+      finally{
+        setTimeout(() => this.initObserver(), 100);
       }
     });
     this.serviceInitialized = true
   }
+
 
   ngOnChanges() {
     if (this.imageSrc?.length) {
@@ -155,6 +160,7 @@ export class ScannerComponent implements OnChanges {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            console.log("asdasdsd : ", entry.target.getAttribute('data-index'));
             this.currentIndex = Number(entry.target.getAttribute('data-index'));
           }
         });
@@ -196,7 +202,9 @@ export class ScannerComponent implements OnChanges {
     this.isLoading = true;
     setTimeout(() => {
       this.imageSrc = DummyImages;
+      
       this.isLoading = false;
+      setTimeout(() => this.initObserver(), 100);
     }, 2000);
     this.signalRService.startScanning();
   }

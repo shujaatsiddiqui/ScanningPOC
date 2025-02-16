@@ -4,9 +4,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
-// import { ScannerModule } from './components/scanner/scanner.module';
+import { ScannerModule } from './components/scanner/scanner.module';
 
-import {ScannerModule} from "scanner"
+// import {ScannerModule} from "scanner"
 
 @NgModule({
   declarations: [

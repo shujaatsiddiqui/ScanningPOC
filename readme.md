@@ -28,10 +28,17 @@ ng build scanner
 cd dist/scanner
 ```
 
-4. Link the built library:
+4. Link the built library (for local lonking):
 ```bash
 npm link
 ```
+
+5. Pack the built library (for local lonking):
+```bash
+npm pack
+```
+if you have run the command `npm pack` then you should have created `.tgz` file that can used in other projects package json along with it's complete path for installation.
+
 This process ensures that the library is built and can be used across multiple projects without needing to publish it to an npm registry.
 
 
