@@ -1,0 +1,23 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ScannerComponent } from './scanner.component';
+import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
+import { ImageCropperModule } from 'ngx-image-cropper';
+
+@NgModule({
+  declarations: [ScannerComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LottieComponent,
+    ImageCropperModule
+  ],
+  exports: [ScannerComponent],
+  providers: [
+      provideLottieOptions({
+        player: () => import('lottie-web'),
+      })
+    ]
+})
+export class ScannerModule { }

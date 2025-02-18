@@ -1,0 +1,15 @@
+{
+  "name": "@casex/scanner-lib",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^14.2.0",
+    "@angular/core": "^14.2.0",
+    "@microsoft/signalr": "^8.0.7",
+    "ngx-image-cropper": "^6.0.2",
+    "ngx-lottie": "^9.0.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}
