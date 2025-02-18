@@ -10,7 +10,7 @@
   },
   "private": true,
   "dependencies": {
-    "@casex/scanner-lib":"file:/D:/Projects/ScanningPOC/v14/scanner-lib-v14/dist/casex/scanner-lib/casex-scanner-lib-0.0.1.tgz",
+    "@casex/scanner-lib":"file:/C:/Development/ScanningPOC/v14/scanner-lib-v14/dist/casex/scanner-lib/casex-scanner-lib-0.0.1.tgz",
     "@angular/animations": "^14.2.0",
     "@angular/common": "^14.2.0",
     "@angular/compiler": "^14.2.0",
