@@ -143,37 +143,59 @@ namespace WinClient
     // SignalR Hub Implementation
     public class ScannerHub : Hub
     {
-        public async Task ScanPDF()
+        public async Task<List<string>> GetDevices()
+        {
+            using var scanningContext = new ScanningContext(new GdiImageContext());
+            var controller = new ScanController(scanningContext);
+            var devices = await controller.GetDeviceList();
+            return devices.Select(d => d.Name).ToList();
+        }
+
+        public async Task ScanPDF(string deviceName, int dpi, string pageSize, string paperSource)
         {
             using var scanningContext = new ScanningContext(new GdiImageContext());
             var controller = new ScanController(scanningContext);
 
             // Query for available scanning devices
             var devices = await controller.GetDeviceList();
+            var selectedDevice = devices.FirstOrDefault(d => d.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase));
 
-            if (!devices.Any())
+            if (selectedDevice == null)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", "No scanning devices found.");
+                await Clients.Caller.SendAsync("ReceiveMessage", "Scanning device not found.");
+                return;
+            }
+
+            //// Parse page size
+            //if (!Enum.TryParse<PageSize>("PageSize." + pageSize, true, out var parsedPageSize))
+            //{
+            //    await Clients.Caller.SendAsync("ReceiveMessage", "Invalid Page Size.");
+            //    return;
+            //}
+
+            // Parse paper source
+            if (!Enum.TryParse<NAPS2.Scan.PaperSource>(paperSource, true, out var parsedPaperSource))
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", "Invalid Paper Source.");
                 return;
             }
 
             // Set scanning options
             var options = new ScanOptions
             {
-                Device = devices.First(),
-                PaperSource = NAPS2.Scan.PaperSource.Flatbed,
+                Device = selectedDevice,
+                PaperSource = parsedPaperSource,
                 PageSize = PageSize.A4,
-                Dpi = 300
+                Dpi = dpi
             };
 
             string filename = "";
-            // Scan and save images
             int i = 1;
             await foreach (var image in controller.Scan(options))
             {
                 filename = Path.Combine("output", $"page{i++}.jpg");
                 Directory.CreateDirectory("output"); // Ensure the directory exists
-                image.Save($"{filename}");
+                image.Save(filename);
             }
 
             if (File.Exists(filename))
