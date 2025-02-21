@@ -1,4 +1,4 @@
-namespace WinClient
+namespace Casex.DeviceManager
 {
     internal static class Program
     {

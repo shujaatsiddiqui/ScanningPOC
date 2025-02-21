@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
-using NAPS2.Images;
-using NAPS2.Images.Gdi;
-using NAPS2.Scan;
 using Microsoft.Extensions.DependencyInjection;
+using Casex.DeviceManager.Connectors;
 
-namespace WinClient
+namespace Casex.DeviceManager
 {
     internal class TrayApplicationContext : ApplicationContext
     {
@@ -140,73 +137,4 @@ namespace WinClient
 
     }
 
-    // SignalR Hub Implementation
-    public class ScannerHub : Hub
-    {
-        public async Task<List<string>> GetDevices()
-        {
-            using var scanningContext = new ScanningContext(new GdiImageContext());
-            var controller = new ScanController(scanningContext);
-            var devices = await controller.GetDeviceList();
-            return devices.Select(d => d.Name).ToList();
-        }
-
-        public async Task ScanPDF(string deviceName, int dpi, string pageSize, string paperSource)
-        {
-            using var scanningContext = new ScanningContext(new GdiImageContext());
-            var controller = new ScanController(scanningContext);
-
-            // Query for available scanning devices
-            var devices = await controller.GetDeviceList();
-            var selectedDevice = devices.FirstOrDefault(d => d.Name.Equals(deviceName, StringComparison.OrdinalIgnoreCase));
-
-            if (selectedDevice == null)
-            {
-                await Clients.Caller.SendAsync("ReceiveMessage", "Scanning device not found.");
-                return;
-            }
-
-            //// Parse page size
-            //if (!Enum.TryParse<PageSize>("PageSize." + pageSize, true, out var parsedPageSize))
-            //{
-            //    await Clients.Caller.SendAsync("ReceiveMessage", "Invalid Page Size.");
-            //    return;
-            //}
-
-            // Parse paper source
-            if (!Enum.TryParse<NAPS2.Scan.PaperSource>(paperSource, true, out var parsedPaperSource))
-            {
-                await Clients.Caller.SendAsync("ReceiveMessage", "Invalid Paper Source.");
-                return;
-            }
-
-            // Set scanning options
-            var options = new ScanOptions
-            {
-                Device = selectedDevice,
-                PaperSource = parsedPaperSource,
-                PageSize = PageSize.A4,
-                Dpi = dpi
-            };
-
-            string filename = "";
-            int i = 1;
-            await foreach (var image in controller.Scan(options))
-            {
-                filename = Path.Combine("output", $"page{i++}.jpg");
-                Directory.CreateDirectory("output"); // Ensure the directory exists
-                image.Save(filename);
-            }
-
-            if (File.Exists(filename))
-            {
-                byte[] fileBytes = await File.ReadAllBytesAsync(filename);
-                await Clients.Caller.SendAsync("onAttachmentReceive", fileBytes);
-            }
-            else
-            {
-                await Clients.Caller.SendAsync("ReceiveMessage", $"File {filename} not found.");
-            }
-        }
-    }
 }

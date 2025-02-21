@@ -30,12 +30,30 @@ try
     Console.WriteLine($"Using Device: {selectedDevice}");
 
     // 2. Listen for messages and file responses
-    hubConnection.On<byte[]>("onAttachmentReceive", fileBytes =>
+    hubConnection.On<List<string>>("onAttachmentReceive", base64Images =>
     {
-        Console.WriteLine($"Received scanned file. Size: {fileBytes.Length} bytes.");
-        // You can save the file locally if needed
-        System.IO.File.WriteAllBytes("scanned_document.jpg", fileBytes);
-        Console.WriteLine("File saved as 'scanned_document.jpg'.");
+        Console.WriteLine($"Received {base64Images.Count} scanned images.");
+
+        string outputDirectory = Path.Combine("output");
+        Directory.CreateDirectory(outputDirectory); // Ensure output directory exists
+
+        for (int i = 0; i < base64Images.Count; i++)
+        {
+            try
+            {
+                var base64String = base64Images[i];
+                var imageBytes = Convert.FromBase64String(base64String);
+
+                var fileName = Path.Combine(outputDirectory, $"scanned_page_{i + 1}.png");
+                File.WriteAllBytes(fileName, imageBytes);
+
+                Console.WriteLine($"Image {i + 1} saved as '{fileName}'.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving image {i + 1}: {ex.Message}");
+            }
+        }
     });
 
     hubConnection.On<string>("ReceiveMessage", message =>
@@ -50,6 +68,7 @@ try
     // Wait for response
     Console.WriteLine("Waiting for scanned document...");
     await Task.Delay(10000); // Give some time to receive the scan result
+    Console.ReadLine();
 }
 catch (Exception ex)
 {

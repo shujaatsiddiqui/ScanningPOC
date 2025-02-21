@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinClient", "WinClient.csproj", "{865F8E25-6F3F-40DD-A6F4-B097AFD3D71A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Casex.DeviceManager", "Casex.DeviceManager.csproj", "{865F8E25-6F3F-40DD-A6F4-B097AFD3D71A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
