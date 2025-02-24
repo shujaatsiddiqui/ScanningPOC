@@ -56,16 +56,16 @@ namespace Casex.DeviceManager
                 {
                     signalRHost = CreateSignalRHost();
                     await signalRHost.StartAsync();
-                    MessageBox.Show("SignalR server started.");
+                    MessageBox.Show("Casex device manager service started.");
                 }
                 else
                 {
-                    MessageBox.Show("SignalR server is already running.");
+                    MessageBox.Show("Casex device manager service is already running.");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to start SignalR server: {ex.Message}");
+                MessageBox.Show($"Failed to start Casex device manager service : {ex.Message}");
             }
         }
 
@@ -78,22 +78,23 @@ namespace Casex.DeviceManager
                     await signalRHost.StopAsync();
                     signalRHost.Dispose();
                     signalRHost = null;
-                    MessageBox.Show("SignalR server stopped.");
+                    MessageBox.Show("Casex device manager service stopped.");
                 }
                 else
                 {
-                    MessageBox.Show("SignalR server is not running.");
+                    MessageBox.Show("Casex device manager service is not running.");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to stop SignalR server: {ex.Message}");
+                MessageBox.Show($"Failed to stop Casex device manager service: {ex.Message}");
             }
         }
 
         private void OnExit(object sender, EventArgs e)
         {
-            trayIcon.Visible = false;
+            if (trayIcon != null)
+                trayIcon.Visible = false;
 
             if (signalRHost != null)
             {

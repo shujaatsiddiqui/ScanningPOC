@@ -17,7 +17,7 @@ namespace Casex.DeviceManager.Connectors
             return devices.Select(d => d.Name).ToList();
         }
 
-        public async Task ScanPDF(string deviceName, int dpi, string pageSize, string paperSource)
+        public async Task ScanPDF(string deviceName, int dpi, string pageSize, string paperSource, string colorSettings ) 
         {
             _scanCancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = _scanCancellationTokenSource.Token;
@@ -49,13 +49,20 @@ namespace Casex.DeviceManager.Connectors
                 return;
             }
 
+            if (!Enum.TryParse<NAPS2.Images.BitDepth>(colorSettings, true, out var parsedcolorSettings))
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", "Invalid Paper Source.");
+                return;
+            }
+
             // Set scanning options
             var options = new ScanOptions
             {
                 Device = selectedDevice,
                 PaperSource = parsedPaperSource,
                 PageSize = PageSize.A4,
-                Dpi = dpi
+                Dpi = dpi,
+                BitDepth = parsedcolorSettings
             };
 
             var outputDirectory = Path.Combine("output");
